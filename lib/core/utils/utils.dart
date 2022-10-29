@@ -7,28 +7,34 @@ import 'package:intl/intl.dart';
 class CategoryExpense {
   final ExpenseCategory expenseCategory;
   final int amount;
+  List<ExpenseEntity> expenseEntities;
 
   CategoryExpense({
     required this.expenseCategory,
     required this.amount,
+    required this.expenseEntities,
   });
 }
 
 List<CategoryExpense> getCategoryExpenses (List<ExpenseEntity> expenses)  {
-  Map<ExpenseCategory, int> categoryExpensesMap = {};
+  Map<ExpenseCategory, List<ExpenseEntity>> category2Entities = {};
   for(final expense in expenses){
-    if(categoryExpensesMap.containsKey(expense.category)) {
-      categoryExpensesMap.update(expense.category, (value) => value + expense.amount);
-    } else {
-      categoryExpensesMap[expense.category] = expense.amount;
-    }
+    (category2Entities[expense.category] ??= []).add(expense);
   }
   List<CategoryExpense> categoryExpenses = [];
-  categoryExpensesMap.forEach((expenseCategory, amount) {
-    categoryExpenses.add(CategoryExpense(expenseCategory: expenseCategory, amount: amount));
+  category2Entities.forEach((expenseCategory, filteredExpenses) {
+    categoryExpenses.add(CategoryExpense(expenseCategory: expenseCategory, amount: getTotalAmount(filteredExpenses), expenseEntities: filteredExpenses));
   });
   categoryExpenses.sort((a, b) => (b.amount.compareTo(a.amount)));
   return categoryExpenses;
+}
+
+int getTotalAmount(List<ExpenseEntity> expenses) {
+  int totalAmount = 0;
+  for(final expense in expenses){
+    totalAmount += expense.amount;
+  }
+  return totalAmount;
 }
 
 Map<DateTime, List<ExpenseEntity>> getMonthlyExpensesMap (List<ExpenseEntity> expenses){

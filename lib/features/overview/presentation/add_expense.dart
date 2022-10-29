@@ -185,7 +185,6 @@ class _CategoryScrollableListState extends State<CategoryScrollableList> {
         itemBuilder: (BuildContext context, int index) {
           return ExpenseCategoryCard(index, isSelected: index == selectedIndex, setSelectedIndex);
         },
-        // children: categoryItems.map((e) => ExpenseCategoryCard(e)).toList(),
       ),
     );
   }

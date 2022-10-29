@@ -16,7 +16,7 @@ class CollapsableMonthlyExpense extends StatelessWidget {
     return ExpansionTile(
       title: Text(getMonthString(date)),
       controlAffinity: ListTileControlAffinity.leading,
-      children: expenseEntities.map((expenseEntity) => ExpenseListTileItem(expenseEntity)).toList(),
+      children: expenseEntities.map((expenseEntity) => ExpenseListTileItem(expenseEntity, true)).toList(),
     );
   }
 }

@@ -12,8 +12,9 @@ import 'package:expense_tracker/core/widgets/gap.dart';
 import 'package:expense_tracker/core/utils/utils.dart';
 
 class ExpenseListTileItem extends StatelessWidget {
-  const ExpenseListTileItem(this.expenseEntity, {Key? key}) : super(key: key);
+  const ExpenseListTileItem(this.expenseEntity, this.avatarVisible, {Key? key}) : super(key: key);
   final ExpenseEntity expenseEntity;
+  final bool avatarVisible;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class ExpenseListTileItem extends StatelessWidget {
         children: [
           Row(
             children: [
-              ExpenseAvatar(expenseEntity.category),
+              avatarVisible ? ExpenseAvatar(expenseEntity.category) : const SizedBox(width: Sizes.s24,),
               Gap.md,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
