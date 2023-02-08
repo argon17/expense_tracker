@@ -9,47 +9,56 @@ import 'package:provider/provider.dart';
 import 'package:expense_tracker/config/constants.dart';
 import 'package:expense_tracker/core/widgets/gap.dart';
 
-class AddExpense extends StatefulWidget {
-  const AddExpense({Key? key}) : super(key: key);
-
+// ignore: must_be_immutable
+class DetailedExpense extends StatefulWidget {
+  ExpenseEntity? expenseEntity;
+  DetailedExpense({Key? key, this.expenseEntity}) : super(key: key);
   @override
-  State<AddExpense> createState() => _AddExpenseState();
+  State<DetailedExpense> createState() => _DetailedExpenseState();
 }
 
-
-class _AddExpenseState extends State<AddExpense> {
-
+class _DetailedExpenseState extends State<DetailedExpense> {
   final TextEditingController dateInputController = TextEditingController();
   final TextEditingController descInputController = TextEditingController();
   final TextEditingController amountInputController = TextEditingController();
 
   DateTime createdAt = DateTime.now();
-  int gridViewIndex = 0;
-
-  set string(int value) => setState(() => gridViewIndex = value);
+  int gridViewIndex = -1;
 
   @override
   void initState() {
+    ExpenseEntity? oldExpenseEntity = widget.expenseEntity;
     dateInputController.text = "Today";
     descInputController.text = "";
     amountInputController.text = "";
+    if (oldExpenseEntity != null) {
+      dateInputController.text =
+          DateFormat('dd/MM/yyyy').format(oldExpenseEntity.createdAt);
+      descInputController.text = oldExpenseEntity.desc;
+      amountInputController.text = oldExpenseEntity.amount.toString();
+      gridViewIndex = categoryItems.indexOf(categoryItems
+          .where((expenseCategoryItem) =>
+              expenseCategoryItem.category == oldExpenseEntity.category)
+          .first);
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final expenseViewModel = context.watch<ExpenseViewModel>();
+    ExpenseEntity? oldExpenseEntity = widget.expenseEntity;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          expenseViewModel.addExpense(
-            ExpenseEntity(
-                createdAt: createdAt,
-                category: categoryItems[gridViewIndex].category,
-                amount: int.parse(amountInputController.text),
-                desc: descInputController.text
-            )
-          );
+          expenseViewModel.addExpense(ExpenseEntity(
+              createdAt: createdAt,
+              category: categoryItems[gridViewIndex].category,
+              amount: int.parse(amountInputController.text),
+              desc: descInputController.text));
+          if (oldExpenseEntity != null) {
+            expenseViewModel.removeExpense(oldExpenseEntity);
+          }
           context.pop();
         },
         child: const Icon(Icons.done),
@@ -64,13 +73,10 @@ class _AddExpenseState extends State<AddExpense> {
               children: [
                 Gap.sm,
                 IconButton(
-                  padding: const EdgeInsets.all(0),
-                  constraints: const BoxConstraints(),
-                  onPressed: () => {
-                    context.pop()
-                  },
-                  icon: const Icon(Icons.close)
-                ),
+                    padding: const EdgeInsets.all(0),
+                    constraints: const BoxConstraints(),
+                    onPressed: () => {context.pop()},
+                    icon: const Icon(Icons.close)),
                 Gap.lg,
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,13 +96,13 @@ class _AddExpenseState extends State<AddExpense> {
                         autofocus: true,
                         style: const TextStyle(fontSize: FontSizes.s48),
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(
+                            border: OutlineInputBorder(
                               borderSide: BorderSide.none,
-                          ),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                          hintText: "0",
-                          hintStyle: TextStyle(color: Colors.white)
-                        ),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 0),
+                            hintText: "0",
+                            hintStyle: TextStyle(color: Colors.white)),
                       ),
                     )
                   ],
@@ -104,7 +110,8 @@ class _AddExpenseState extends State<AddExpense> {
                 Gap.md,
                 const Text("Category"),
                 Gap.md,
-                CategoryScrollableList((val) => setState(() => gridViewIndex = val)),
+                SelectCategoryScrollableList(gridViewIndex,
+                    (val) => setState(() => gridViewIndex = val)),
                 Gap.lg,
                 const Text("Details"),
                 Gap.md,
@@ -113,22 +120,22 @@ class _AddExpenseState extends State<AddExpense> {
                   keyboardType: TextInputType.datetime,
                   readOnly: true,
                   decoration: const InputDecoration(
-                      icon: Icon(Icons.calendar_today, color: Colors.white),
+                    icon: Icon(Icons.calendar_today, color: Colors.white),
                   ),
                   onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(1950),
-                    lastDate: DateTime(2100)
-                  );
-                  if (pickedDate != null) {
-                    String formattedDate = DateFormat('dd/MM/yyyy').format(pickedDate);
-                    setState(() {
-                      dateInputController.text = formattedDate;
-                      createdAt = pickedDate;
-                    });
-                  }
+                    DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1950),
+                        lastDate: DateTime(2100));
+                    if (pickedDate != null) {
+                      String formattedDate =
+                          DateFormat('dd/MM/yyyy').format(pickedDate);
+                      setState(() {
+                        dateInputController.text = formattedDate;
+                        createdAt = pickedDate;
+                      });
+                    }
                   },
                 ),
                 Gap.md,
@@ -136,8 +143,7 @@ class _AddExpenseState extends State<AddExpense> {
                   controller: descInputController,
                   decoration: const InputDecoration(
                       icon: Icon(Icons.comment, color: Colors.white),
-                      labelText: "Add Description"
-                  ),
+                      labelText: "Add Description"),
                 )
               ],
             ),
@@ -148,28 +154,21 @@ class _AddExpenseState extends State<AddExpense> {
   }
 }
 
-
-class CategoryScrollableList extends StatefulWidget {
-  final dynamic callback;
-
-  const CategoryScrollableList(this.callback, {Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class SelectCategoryScrollableList extends StatefulWidget {
+  final dynamic setSelectedIndex;
+  int selectedIndex;
+  SelectCategoryScrollableList(this.selectedIndex, this.setSelectedIndex,
+      {Key? key})
+      : super(key: key);
 
   @override
-  State<CategoryScrollableList> createState() => _CategoryScrollableListState();
+  State<SelectCategoryScrollableList> createState() =>
+      _SelectCategoryScrollableList();
 }
 
-
-class _CategoryScrollableListState extends State<CategoryScrollableList> {
-
-  var selectedIndex = -1;
-
-  void setSelectedIndex(int newIndex){
-    setState(() {
-      selectedIndex = newIndex;
-      widget.callback(selectedIndex);
-    });
-  }
-
+class _SelectCategoryScrollableList
+    extends State<SelectCategoryScrollableList> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -178,30 +177,33 @@ class _CategoryScrollableListState extends State<CategoryScrollableList> {
       child: GridView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2
-        ),
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemCount: categoryItems.length,
         itemBuilder: (BuildContext context, int index) {
-          return ExpenseCategoryCard(index, isSelected: index == selectedIndex, setSelectedIndex);
+          return ExpenseCategoryCard(
+              index,
+              isSelected: index == widget.selectedIndex,
+              widget.setSelectedIndex);
         },
       ),
     );
   }
 }
 
-
 class ExpenseCategoryCard extends StatelessWidget {
   final int curIndex;
   final bool isSelected;
   final dynamic setSelectedIndex;
-  const ExpenseCategoryCard(this.curIndex, this.setSelectedIndex, {this.isSelected = false, Key? key}) : super(key: key);
+  const ExpenseCategoryCard(this.curIndex, this.setSelectedIndex,
+      {this.isSelected = false, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final ExpenseCategoryItem expenseCategoryItem = categoryItems[curIndex];
     return InkWell(
-      onTap: (){
+      onTap: () {
         setSelectedIndex(curIndex);
       },
       child: Container(
@@ -226,4 +228,3 @@ class ExpenseCategoryCard extends StatelessWidget {
     );
   }
 }
-

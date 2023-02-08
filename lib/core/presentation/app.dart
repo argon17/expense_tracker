@@ -11,7 +11,6 @@ class AppPage extends StatefulWidget {
 }
 
 class _AppPageState extends State<AppPage> {
-
   final List<Widget> _widgetOptions = const [
     HistoryPage(),
     OverviewPage(),
@@ -34,18 +33,16 @@ class _AppPageState extends State<AppPage> {
         unselectedItemColor: Colors.blueGrey,
         currentIndex: _selectedIndex,
         items: _bottomNavigationBarItems
-            .map(
-                (item) => BottomNavigationBarItem(
+            .map((item) => BottomNavigationBarItem(
                   icon: Icon(item.icon),
                   label: item.label,
                   activeIcon: Icon(item.activeIcon),
-                )
-            ).toList(),
+                ))
+            .toList(),
       ),
     );
   }
 }
-
 
 const _bottomNavigationBarItems = <_Item>[
   _Item(
@@ -64,7 +61,6 @@ const _bottomNavigationBarItems = <_Item>[
     activeIcon: Icons.trending_up,
   ),
 ];
-
 
 class _Item {
   final String label;

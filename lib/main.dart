@@ -1,4 +1,3 @@
-import 'package:expense_tracker/config/constants.dart';
 import 'package:expense_tracker/config/theme.dart';
 import 'package:expense_tracker/core/data/models/expense.dart';
 import 'package:expense_tracker/core/data/view_models/expense_view_model.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
-void main() async{
+void main() async {
   await Hive.initFlutter();
   WidgetsFlutterBinding.ensureInitialized();
   Hive.registerAdapter(ExpenseModelAdapter());

@@ -1,19 +1,16 @@
-import 'dart:math';
-
 import 'package:expense_tracker/core/data/mappers/expense_mapper.dart';
 import 'package:expense_tracker/core/domain/entities/expense.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-
 import '../models/expense.dart';
 
-class ExpenseViewModel extends ChangeNotifier{
+class ExpenseViewModel extends ChangeNotifier {
   static const String _boxName = 'expenseBox';
   List<ExpenseEntity> _expenseListEntities = [];
 
   List<ExpenseEntity> get expenseListEntities => _expenseListEntities;
 
-  ExpenseViewModel(){
+  ExpenseViewModel() {
     getExpenses();
   }
 
@@ -27,10 +24,23 @@ class ExpenseViewModel extends ChangeNotifier{
     notifyListeners();
   }
 
-  addExpense(ExpenseEntity expenseEntity) async{
+  addExpense(ExpenseEntity expenseEntity) async {
     _expenseListEntities.add(expenseEntity);
     final box = await Hive.openBox<ExpenseModel>(_boxName);
-    await box.add(expenseEntity.toModel());
+    await box.put(expenseEntity.toString(), expenseEntity.toModel());
     notifyListeners();
+  }
+
+  removeExpense(ExpenseEntity expenseEntity) async {
+    _expenseListEntities.remove(expenseEntity);
+    final box = await Hive.openBox<ExpenseModel>(_boxName);
+    await box.delete(expenseEntity.toString());
+    notifyListeners();
+  }
+
+  updateExpense(
+      ExpenseEntity oldExpenseEntity, ExpenseEntity newExpenseEntity) async {
+    removeExpense(oldExpenseEntity);
+    addExpense(newExpenseEntity);
   }
 }

@@ -4,17 +4,19 @@ import 'package:expense_tracker/core/utils/utils.dart';
 import 'package:expense_tracker/core/widgets/expense_avatar.dart';
 import 'package:flutter/material.dart';
 
-import '../../../config/constants.dart';
-import '../../../core/widgets/gap.dart';
-import '../../history/presentation/expense_list_item.dart';
+import 'package:expense_tracker/config/constants.dart';
+import 'package:expense_tracker/core/widgets/gap.dart';
+import 'package:expense_tracker/features/history/presentation/expense_list_item.dart';
 
 class CategoryExpenseDetails extends StatelessWidget {
   final CategoryExpense categoryExpense;
-  const CategoryExpenseDetails(this.categoryExpense, {Key? key}) : super(key: key);
+  const CategoryExpenseDetails(this.categoryExpense, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final categoryItem = categoryItems.singleWhere((e) => e.category == categoryExpense.expenseCategory);
+    final categoryItem = categoryItems
+        .singleWhere((e) => e.category == categoryExpense.expenseCategory);
     return Scaffold(
       body: Column(
         children: [
@@ -29,11 +31,8 @@ class CategoryExpenseDetails extends StatelessWidget {
                 IconButton(
                     padding: const EdgeInsets.all(0),
                     constraints: const BoxConstraints(),
-                    onPressed: () => {
-                      context.pop()
-                    },
-                    icon: const Icon(Icons.arrow_back)
-                ),
+                    onPressed: () => {context.pop()},
+                    icon: const Icon(Icons.arrow_back)),
                 Gap.lg,
                 Row(
                   children: [
@@ -41,9 +40,7 @@ class CategoryExpenseDetails extends StatelessWidget {
                     Gap.md,
                     Text(
                       categoryItem.name,
-                      style: const TextStyle(
-                          fontSize: FontSizes.s32
-                      ),
+                      style: const TextStyle(fontSize: FontSizes.s32),
                     ),
                   ],
                 ),
@@ -58,11 +55,13 @@ class CategoryExpenseDetails extends StatelessWidget {
           ),
           Gap.lg,
           Column(
-            children: categoryExpense.expenseEntities.map((expenseEntity) => ExpenseListTileItem(expenseEntity, false)).toList(),
+            children: categoryExpense.expenseEntities
+                .map((expenseEntity) =>
+                    ExpenseListTileItem(expenseEntity, false))
+                .toList(),
           )
         ],
       ),
     );
   }
 }
-

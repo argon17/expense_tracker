@@ -7,13 +7,13 @@ part 'expense.g.dart';
 class ExpenseModel extends HiveObject {
   @HiveField(0)
   final DateTime createdAt;
-  
+
   @HiveField(1)
   final ExpenseCategory category;
-  
+
   @HiveField(2)
   final int amount;
-  
+
   @HiveField(3)
   final String desc;
 

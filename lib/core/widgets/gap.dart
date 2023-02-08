@@ -14,7 +14,7 @@ class Gap extends LeafRenderObjectWidget {
 
   @override
   void updateRenderObject(
-      BuildContext context, covariant RenderGap renderObject) =>
+          BuildContext context, covariant RenderGap renderObject) =>
       renderObject.gap = gap;
 }
 
@@ -36,7 +36,7 @@ class RenderGap extends RenderBox {
   void performLayout() {
     final Axis? direction = (parent as RenderFlex?)?.direction;
     assert(direction != null,
-    'gap should not be used outside of a Flex (Row, Column)');
+        'gap should not be used outside of a Flex (Row, Column)');
     if (direction == null) {
       size = Size(0, gap);
     } else {

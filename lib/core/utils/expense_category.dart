@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:expense_tracker/config/constants.dart';
 import 'package:flutter/material.dart';
 
-enum ExpenseCategory{
+enum ExpenseCategory {
   grocery,
   travel,
   foodAndDrinks,
@@ -18,7 +18,7 @@ enum ExpenseCategory{
   flight
 }
 
-class ExpenseCategoryItem{
+class ExpenseCategoryItem {
   final String name;
   final IconData iconData;
   final ExpenseCategory category;
@@ -29,7 +29,6 @@ class ExpenseCategoryItem{
     required this.category,
   });
 }
-
 
 final List<ExpenseCategoryItem> categoryItems = [
   ExpenseCategoryItem(
