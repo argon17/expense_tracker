@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'package:expense_tracker/core/domain/entities/expense.dart';
 import 'package:expense_tracker/core/utils/expense_category.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class CategoryExpense {
   final ExpenseCategory expenseCategory;
@@ -74,4 +75,13 @@ String getDayString(DateTime date) {
   final String formattedDate =
       DateFormat(DateFormat.YEAR_ABBR_MONTH_WEEKDAY_DAY).format(date);
   return formattedDate;
+}
+
+Future<PermissionStatus> getPermissions() async {
+  final storageStatus = await Permission.storage.request();
+  if (storageStatus == PermissionStatus.granted) {
+    return PermissionStatus.granted;
+  } else {
+    return PermissionStatus.denied;
+  }
 }

@@ -31,6 +31,7 @@ class _DetailedExpenseState extends State<DetailedExpense> {
     dateInputController.text = "Today";
     descInputController.text = "";
     amountInputController.text = "";
+    bool changed = true;
     if (oldExpenseEntity != null) {
       dateInputController.text =
           DateFormat('dd/MM/yyyy').format(oldExpenseEntity.createdAt);
@@ -50,16 +51,30 @@ class _DetailedExpenseState extends State<DetailedExpense> {
     ExpenseEntity? oldExpenseEntity = widget.expenseEntity;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          expenseViewModel.addExpense(ExpenseEntity(
-              createdAt: createdAt,
-              category: categoryItems[gridViewIndex].category,
-              amount: int.parse(amountInputController.text),
-              desc: descInputController.text));
-          if (oldExpenseEntity != null) {
-            expenseViewModel.removeExpense(oldExpenseEntity);
+        onPressed: () async {
+          if (oldExpenseEntity != null &&
+              createdAt == oldExpenseEntity.createdAt &&
+              oldExpenseEntity.category ==
+                  categoryItems[gridViewIndex].category &&
+              oldExpenseEntity.amount ==
+                  int.parse(amountInputController.text) &&
+              oldExpenseEntity.desc == descInputController.text) {
+          } else {
+            expenseViewModel.addExpense(
+              ExpenseEntity(
+                  createdAt: createdAt,
+                  category: categoryItems[gridViewIndex].category,
+                  amount: int.parse(amountInputController.text),
+                  desc: descInputController.text),
+            );
+            if (oldExpenseEntity != null) {
+              expenseViewModel.removeExpense(oldExpenseEntity);
+            }
           }
-          context.pop();
+          Navigator.pop(context);
+          print("operation performed");
+          final lol = await expenseViewModel.getExpenses();
+          print(lol);
         },
         child: const Icon(Icons.done),
       ),

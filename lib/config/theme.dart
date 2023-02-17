@@ -31,7 +31,10 @@ class AppTheme {
         ),
         appBarTheme: AppBarTheme(
           elevation: 0,
-          backgroundColor: AppColors.kPrimary,
+          backgroundColor: AppColors.kScaffold,
+          iconTheme: IconThemeData(
+            color: AppColors.kGrey,
+          ),
         ),
       );
 

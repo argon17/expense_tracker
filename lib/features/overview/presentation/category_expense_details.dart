@@ -53,13 +53,17 @@ class CategoryExpenseDetails extends StatelessWidget {
               ],
             ),
           ),
-          Gap.lg,
-          Column(
-            children: categoryExpense.expenseEntities
-                .map((expenseEntity) =>
-                    ExpenseListTileItem(expenseEntity, false))
-                .toList(),
-          )
+          Expanded(
+            // child: SizedBox(
+            child: ListView.builder(
+              itemCount: categoryExpense.expenseEntities.length,
+              itemBuilder: (BuildContext ctx, int ind) {
+                return ExpenseListTileItem(
+                    categoryExpense.expenseEntities[ind], false);
+              },
+            ),
+            // ),
+          ),
         ],
       ),
     );

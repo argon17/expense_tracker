@@ -1,3 +1,4 @@
+import 'package:expense_tracker/core/presentation/app.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/config/constants.dart';
 import 'package:expense_tracker/core/data/view_models/expense_view_model.dart';
@@ -20,6 +21,33 @@ class OverviewPage extends StatelessWidget {
     List<ExpenseEntity> expenses =
         expenseViewModel.expenseListEntities.cast<ExpenseEntity>().toList();
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        actions: [
+          PopupMenuButton(itemBuilder: (context) {
+            return const [
+              PopupMenuItem<int>(
+                value: 0,
+                child: Text("Export Backup"),
+              ),
+              PopupMenuItem<int>(
+                value: 1,
+                child: Text("Import Backup"),
+              ),
+            ];
+          }, onSelected: (value) {
+            if (value == 0) {
+              expenseViewModel.exportHiveBackup();
+            } else if (value == 1) {
+              expenseViewModel.importHiveBackup();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AppPage()),
+              );
+            }
+          }),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
@@ -33,7 +61,6 @@ class OverviewPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: Insets.md),
             child: Column(
               children: [
-                Gap.lg,
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
